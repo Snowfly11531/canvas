@@ -1,0 +1,165 @@
+。、<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>canvas</title>
+	<script type="text/javascript">
+		function center(){
+			this.X;
+			this.Y;
+		}
+		function load(){
+			var canvas=document.getElementById("canvas");
+			window.context=canvas.getContext("2d");
+            //context.globalAlpha=0.8;//设置透明度
+			//context.fillStyle="#ffcc33";//设置填充色
+			//context.fillRect(30,30,30,30);//实心长方形
+			//context.strokeStyle="#006e4f";//设置边框颜色
+			//context.strokeRect(60,60,30,30);//空心长方形
+			//context.clearRect(40,40,10,10);//清除指定区域的长方形
+			grad1=context.createLinearGradient(0,0,0,500);//线性渐变
+			grad1.addColorStop(0,"pink");
+			grad1.addColorStop(0.5,"yellow");
+			grad1.addColorStop(1,"red");
+			/*context.fillStyle=grad1;
+			context.fillRect(20,20,80,50);
+			grad2=context.createRadialGradient(100,100,0,150,150,25);//扇形渐变
+			grad2.addColorStop(0,"red");
+			grad2.addColorStop(0.5,"pink");
+			grad2.addColorStop(1,"yellow");
+			context.fillStyle=grad2;
+			context.fillRect(100,100,150,150);*/
+			//context.fillStyle=grad1;
+			//context.strokeStyle=grad1;
+			//context.arc(250,250,50,Math.PI*1.85,Math.PI*1.15,true);//画圆          
+            window.centers=new Array(600);
+            centers=point(250,250,450);
+            window.centers1=new Array(46);
+            var j=0;
+            for(var k=0;k<24;k++){//找点
+                centers1[k]=new center();
+                var i=j+112;
+                if(i>=441)i=i-441; 
+                centers1[k]=centers[i];
+                for(;j<441;j++){
+                	var next=j+112;
+                	if(next>=441)next=next-441;
+                	if(Math.abs(centers[i].X-centers[next].X)>=26||Math.abs(centers[i].Y-centers[next].Y)>=26){//
+                        break;
+                	}
+                }
+            }
+            for(;k<46;k++){//找点2
+            	var kk=46-k;
+            	centers1[k]=new center();
+                centers1[k].X=500-centers1[kk].X;
+                centers1[k].Y=centers1[kk].Y;
+            }
+            var keys=new Array(51);
+            for(var k=0;k<51;k++){
+            	keys[k]=8;
+            }
+            var keyNum=0;
+            window.str='苟利国家生死以';
+            window.jiangStr="—— the old Jiang";
+            window.jiangStrKey=1;
+            window.strKey=1;
+            var myinterval=setInterval(function(){
+                var incenters=new Array(600);
+                context.beginPath();
+                for(var h=0;h<=keyNum;h++){
+                	keys[h]+=2;
+                	if(keys[h]>26)keys[h]=26;
+                    incenters=point(centers1[h].X,centers1[h].Y,keys[h]);
+                    context.fillStyle=grad1;
+                    context.moveTo(incenters[0].X,incenters[0].Y);
+                    for(var ii=1;ii<442;ii++){
+            	        context.lineTo(incenters[ii].X,incenters[ii].Y);
+                    }
+                    context.fill();
+                }
+                context.closePath();
+                keyNum++;
+                if(keyNum>=55)clearInterval(myinterval);
+            },75);  
+            setTimeout(function(){
+                window.myinterval2=setInterval(function(){
+                    var str1=str.substring(0,strKey);
+                    strKey++;
+                    if(strKey==8){clearInterval(myinterval2);}
+                    context.fillStyle=grad1;
+                    context.textAlign="center";
+                    context.font="bold 32px 华文行楷";
+                    context.clearRect(150,220,350,280);
+                    context.fillText(str1,250,250);
+                },300);                
+            },3500);   
+            setTimeout(function(){
+                window.myinterval3=setInterval(function(){
+                    var str1=jiangStr.substring(0,jiangStrKey);
+                    jiangStrKey++;
+                    if(strKey==18){clearInterval(myinterval3);}
+                    context.fillStyle=grad1;
+                    context.textAlign="center";
+                    context.font="bold 20px 黑体";
+                    context.clearRect(170,280,330,290);
+                    context.fillText(str1,250,300);
+                },200);                
+            },6000);    
+		}
+		function point(centerX,centerY,size){//
+			var centers=new Array(600);
+			for(var i=0;i<600;i++){
+				centers[i]=new center();
+			}
+			centerY=centerY+parseInt(size/8);
+			var zoomX=parseInt(size/2);
+			var zoomY=parseInt(size*2/5);
+			centers[0].X=centerX-zoomX;
+			centers[0].Y=centerY-zoomY;
+			var num=0;
+			for(var x=-1;x<=1;){
+            	if(x>=-0.97&&x<=0.97){
+            		x=x+0.01;
+            	}else {
+            		x=x+0.002;
+            	}
+            	var k1=Math.pow(x*x,1/3);
+            	var k2=Math.pow(1-x*x,1/2);
+            	var y=k1-k2;
+            	num++;
+            	//alert(x+","+num);
+
+            	centers[num].X=centerX+zoomX*x;
+            	centers[num].Y=centerY-parseInt(zoomY*y);
+			}
+			centers[num].X=centerX+zoomX;
+			centers[num].Y=centerY-zoomY;
+			num++;			
+			for(var x=1;x>=-1;){
+            	if(x>=-0.98&&x<=0.98){
+            		x=x-0.01;
+            	}else {
+            		x=x-0.002;
+            	}
+            	var k1=Math.pow(x*x,1/3);
+            	var k2=Math.pow(1-x*x,1/2);
+            	var y=k1+k2;
+            	num++;
+            	//alert(x+","+num);
+            	centers[num].X=centerX+zoomX*x;
+            	centers[num].Y=centerY-parseInt(zoomY*y);
+			}
+			centers[num].X=centerX-zoomX;
+			centers[num].Y=centerY-zoomY;
+			//alert(num);
+			return centers;			
+		}
+	</script>
+</head>
+<body onload="load()" style="background-color: rgba(255,192,203,0.1)">
+    <center>
+    	<canvas id="canvas" height=500 width=500 style="border:0px #000 solid"></canvas>
+    </center>
+</body>
+</html>
